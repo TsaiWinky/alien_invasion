@@ -18,6 +18,7 @@ class Ship(Sprite):
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
 
+        # try
         # 在飞船的属性center中储存小数值
         self.center = float(self.rect.centerx)
 
