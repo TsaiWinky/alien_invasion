@@ -18,6 +18,8 @@ def run_game():
     ship = Ship(ai_settings, screen)
     bullets = Group()
     aliens = Group()
+    alien_bullets = Group()
+    super_bullets = Group()
 
     # 创建外星人群
     gf.create_fleet(ai_settings, screen, ship, aliens)
@@ -31,21 +33,22 @@ def run_game():
 
     # 开始游戏的主循环
     while True:
-        gf.check_events(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard)
+        gf.check_events(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets)
 
         if stats.game_active:
             ship.update()
-            gf.update_bullets(ai_settings, screen, ship, bullets, aliens, stats, scoreboard)
-            gf.update_aliens(ai_settings, screen, ship, bullets, aliens, stats, scoreboard)
+            gf.update_bullets(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, super_bullets)
+            gf.update_aliens(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alien_bullets)
+            gf.update_aliens_fire_bullet(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alien_bullets)
 
-        gf.update_screen(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard)
+        gf.update_screen(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets)
 
 
 run_game()
 
 """
 待增加功能：
-1. 外星人发射子弹，飞船盾牌
+1. 外星人发射子弹，飞船盾牌(完成)
 2. 声音
 3. 破纪录提示
 4. Game Over 提示

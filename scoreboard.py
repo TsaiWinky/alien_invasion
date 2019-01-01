@@ -13,18 +13,19 @@ class Scoreboard():
         self.stats = stats
 
         # 字体设置
-        self.text_color = (30, 30, 30)
-        self.font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 30)
+        self.text_color = (230, 230, 230)
+        self.font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 28)
 
         # 准备得分图像、等级及剩余飞船图像
         self.prep_images()
 
 
     def show_score(self):
-        """在屏幕上显示得分、历史记录、等级"""
+        """在屏幕上显示得分、历史记录、等级、大招数"""
         self.screen.blit(self.score_image, self.score_rect)
         self.screen.blit(self.high_score_image, self.high_score_rect)
         self.screen.blit(self.level_image, self.level_rect)
+        self.screen.blit(self.power_image, self.power_rect)
 
 
     def prep_images(self):
@@ -33,6 +34,7 @@ class Scoreboard():
         self.prep_high_score()
         self.prep_level()
         self.prep_ships()
+        self.prep_power()
 
 
     def prep_score(self):
@@ -75,6 +77,20 @@ class Scoreboard():
         self.ships = Group()
         for ship_number in range(self.stats.ships_left):
             ship = Ship(self.ai_settings, self.screen)
+            ship.image = pygame.transform.scale(ship.image,(25, 27))
+            ship.rect = ship.image.get_rect()
             ship.rect.x = ship.rect.width * ship_number + 10
             ship.rect.y = 10
             self.ships.add(ship)
+
+
+    def prep_power(self):
+        """将大招渲染为图像"""
+        power_num = int(self.stats.power / self.ai_settings.points_of_power)
+        power_str = "Power: " + str(power_num)
+        self.power_image = self.font.render(power_str, True, self.text_color, self.ai_settings.bg_color)
+
+        # 将大招数放在屏幕右下
+        self.power_rect = self.power_image.get_rect()
+        self.power_rect.bottom = self.screen_rect.bottom - 10
+        self.power_rect.right = self.screen_rect.right - 10

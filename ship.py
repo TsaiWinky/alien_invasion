@@ -25,6 +25,8 @@ class Ship(Sprite):
         self.moving_right = False
         self.moving_left = False
 
+        # 无敌标志
+        self.super_mode = False
 
     def update(self):
         """根据移动标志调整飞船位置"""
@@ -40,6 +42,9 @@ class Ship(Sprite):
         """在指定位置绘制飞船"""
         self.screen.blit(self.image, self.rect)
 
+        if self.super_mode:
+            # 无敌模式，绘制金色边框
+            pygame.draw.rect(self.screen, (200, 200, 0),(self.rect), 2)
 
     def center_ship(self):
         self.rect.centerx = self.screen_rect.centerx
