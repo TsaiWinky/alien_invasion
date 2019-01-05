@@ -1,3 +1,5 @@
+import pygame
+
 class Settings():
     """储存《外星人入侵》所有设置的类"""
 
@@ -25,13 +27,21 @@ class Settings():
 
         # 外星人设置
         self.fleet_drop_speed = 10
-        self.alien_bullet_color = (220, 0, 0)
+        self.alien_bullet_color = (220, 220, 0)
 
         # 游戏加快节奏参数
         self.speedup_scale = 1.1
 
         # 击中外星人得分点数的提高速度
         self.score_scale = 1.5
+
+        # 音效设置
+        self.bullet_sound = pygame.mixer.Sound("sounds/bullet.wav")
+        self.super_bullet_sound = pygame.mixer.Sound("sounds/super_bullet.wav")
+        self.ship_hit_sound = pygame.mixer.Sound("sounds/ship_hit.wav")
+        self.start_new_level_sound = pygame.mixer.Sound("sounds/start_new_level.wav")
+        self.super_mode_sound = pygame.mixer.Sound("sounds/super_mode.wav")
+        self.gameover_sound = pygame.mixer.Sound("sounds/gameover.wav")
 
         # 初始化游戏动态设置
         self.initialize_dynamic_settings()
@@ -42,7 +52,7 @@ class Settings():
         self.ship_speed_factor = 1.5
         self.bullet_speed_factor = 3
         self.alien_speed_factor = 1
-        self.super_bullet_speed_factor = 3
+        self.super_bullet_speed_factor = 30
 
         # 1表示右移，-1表示左移
         self.fleet_direction = 1
