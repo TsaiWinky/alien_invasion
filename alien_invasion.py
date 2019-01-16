@@ -6,6 +6,8 @@ from pygame.sprite import Group
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
+from playername_inputbox import PlayernameInputbox
+
 
 def run_game():
     # 初始化游戏并创建一个屏幕对象
@@ -31,9 +33,12 @@ def run_game():
     # 创建开始游戏按钮
     play_button = Button(ai_settings, screen, "Play")
 
+    # 创建玩家名字文本输入框
+    playername_inputbox = PlayernameInputbox(screen)
+
     # 开始游戏的主循环
     while True:
-        gf.check_events(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets)
+        gf.check_events(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets, playername_inputbox)
 
         if stats.game_active:
             ship.update()
@@ -41,7 +46,7 @@ def run_game():
             gf.update_aliens(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alien_bullets, super_bullets)
             gf.update_aliens_fire_bullet(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alien_bullets, super_bullets)
 
-        gf.update_screen(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets)
+        gf.update_screen(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets, playername_inputbox)
 
 
 run_game()
@@ -49,7 +54,7 @@ run_game()
 """
 待增加功能：
 1. 外星人发射子弹，飞船盾牌(完成)
-2. 声音
+2. 声音 (完成)
 3. 破纪录提示
-4. Game Over 提示
+4. Game Over 提示 (完成)
 """

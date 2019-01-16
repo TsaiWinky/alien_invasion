@@ -1,6 +1,8 @@
 import sys
 import pygame
 import random
+import operator
+import json
 from bullet import Bullet
 from super_bullet import SuperBullet
 from alien import Alien
@@ -9,40 +11,45 @@ from time import sleep
 from threading import Timer
 
 
-
 """
 用户操作响应
 """
 
-def check_events(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets):
+def check_events(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets, playername_inputbox):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN:
-            check_keydown_events(event, ai_settings, screen, ship, bullets, stats, scoreboard, super_bullets)
+            check_keydown_events(event, ai_settings, screen, ship, bullets, stats, scoreboard, super_bullets, playername_inputbox)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(ai_settings, screen, ship, bullets, aliens, stats, play_button, mouse_x, mouse_y, scoreboard, alien_bullets, super_bullets)
+            check_playername_input(playername_inputbox, stats, mouse_x, mouse_y)
+            check_play_button(ai_settings, screen, ship, bullets, aliens, stats, play_button, mouse_x, mouse_y, scoreboard, alien_bullets, super_bullets,  playername_inputbox)
 
 
-def check_keydown_events(event, ai_settings, screen, ship, bullets, stats, scoreboard, super_bullets):
+def check_keydown_events(event, ai_settings, screen, ship, bullets, stats, scoreboard, super_bullets, playername_inputbox):
     """响应按键按下"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
     elif event.key == pygame.K_LEFT:
         ship.moving_left = True
     elif event.key == pygame.K_SPACE:
-        fire_bullet(ai_settings, screen, ship, bullets)
+        if stats.game_active:
+            fire_bullet(ai_settings, screen, ship, bullets)
     elif event.key == pygame.K_UP:
-        activate_super_mode(ai_settings, ship, stats, scoreboard)
-    elif event.key == pygame.K_LSHIFT:
-        fire_super_bullet(ai_settings, screen, ship, stats, super_bullets)
+        if stats.game_active:
+            activate_super_mode(ai_settings, ship, stats, scoreboard)
+    elif event.key == pygame.K_LALT:
+        if stats.game_active:
+            fire_super_bullet(ai_settings, screen, ship, stats, super_bullets)
     elif event.key == pygame.K_q:
         sys.exit()
-
+    else:
+        if playername_inputbox.login == False:
+            playername_inputbox.key_down(event)
 
 def check_keyup_events(event, ship):
     """响应按键松开"""
@@ -52,7 +59,12 @@ def check_keyup_events(event, ship):
         ship.moving_left = False
 
 
-def check_play_button(ai_settings, screen, ship, bullets, aliens, stats, play_button, mouse_x, mouse_y, scoreboard, alien_bullets, super_bullets):
+def check_playername_input(playername_inputbox, stats, mouse_x, mouse_y):
+    """检查用户点击玩家名称输入框，若点击，则清空文本"""
+    if playername_inputbox.rect.collidepoint(mouse_x, mouse_y) and not stats.game_active:
+        playername_inputbox.text = ''
+
+def check_play_button(ai_settings, screen, ship, bullets, aliens, stats, play_button, mouse_x, mouse_y, scoreboard, alien_bullets, super_bullets,  playername_inputbox):
     """检查开始游戏按钮是否被按下，并响应"""
     if play_button.rect.collidepoint(mouse_x, mouse_y) and not stats.game_active:
         # 隐藏光标
@@ -66,31 +78,35 @@ def check_play_button(ai_settings, screen, ship, bullets, aliens, stats, play_bu
         stats.game_active = True
         # 清屏并创建新的一群外星人
         clear_and_create_fleet(ai_settings, screen, ship, bullets, aliens, alien_bullets, super_bullets)
+        if playername_inputbox.login == False:
+            stats.player = playername_inputbox.text
+            playername_inputbox.login = True
 
 
 def fire_super_bullet(ai_settings, screen, ship, stats, super_bullets):
     if stats.power >= ai_settings.points_of_power:
+        ai_settings.super_bullet_sound.play()
         new_super_bullet = SuperBullet(ai_settings, screen, ship)
         super_bullets.add(new_super_bullet)
         stats.power -= ai_settings.points_of_power
-        ai_settings.super_bullet_sound.play()
 
 
 def fire_bullet(ai_settings, screen, ship, bullets):
     if len(bullets) < ai_settings.bullets_allowed:
+        ai_settings.bullet_sound.play()
         new_bullet = Bullet(ai_settings, screen, ship)
         bullets.add(new_bullet)
-        ai_settings.bullet_sound.play()
 
 
 def activate_super_mode(ai_settings, ship, stats, scoreboard):
     """响应进入无敌模式"""
     if stats.power >= ai_settings.points_of_power:
-        ai_settings.super_mode_sound.play()
-        ship.super_mode = True
-        stats.power -= ai_settings.points_of_power
-        scoreboard.prep_power()
-        Timer(5, quit_super_mode, args=[ship]).start()
+        if ship.super_mode == False:
+            ai_settings.super_mode_sound.play()
+            ship.super_mode = True
+            stats.power -= ai_settings.points_of_power
+            scoreboard.prep_power()
+            Timer(5, quit_super_mode, args=[ship]).start()
 
 def quit_super_mode(ship):
     ship.super_mode = False
@@ -205,6 +221,7 @@ def check_aliens_bottom(ai_settings, screen, ship, bullets, aliens, stats, score
 def ship_hit(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alien_bullets, super_bullets):
     """响应飞船与外星人碰撞"""
     if stats.ships_left > 0:
+        """仍有剩余飞船，游戏继续"""
         ai_settings.ship_hit_sound.play()
         # 将剩余飞船数减一
         stats.ships_left -= 1
@@ -214,11 +231,73 @@ def ship_hit(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alie
         scoreboard.prep_ships()
 
     else:
-        ai_settings.gameover_sound.play()
+        """游戏结束"""
+        if stats.score == stats.high_score:
+            ai_settings.recordbroken_sound.play()
+        else:
+            ai_settings.gameover_sound.play()
         stats.game_active = False
         pygame.mouse.set_visible(True)
 
+        # 记录此次玩家得分
+        new_score = { 'player': stats.player, 'score': stats.score }
+        stats.scores_data.append(new_score)
+        stats.scores_data.sort(key=lambda x:x["score"], reverse=True)
+        with open('scores.json', 'w') as f:
+            json.dump(stats.scores_data, f)
+
+        # 打印历史得分排行榜Top10
+        if len(stats.scores_data) >= 10:
+            leaderboard_height = 340
+        else:
+            leaderboard_height = len(stats.scores_data) * 30 + 40
+
+        leaderboard_rect = pygame.Rect(450, 180, 300, leaderboard_height)
+        screen.fill(ai_settings.lb_bg_color, leaderboard_rect)
+
+        # 表头
+        leaderboard_font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 28)
+        rank_image_rect = draw_leaderboard(ai_settings.lb_text_color, ai_settings.lb_bg_color, screen, 'Rank', leaderboard_font, 500, 200)
+        player_image_rect = draw_leaderboard(ai_settings.lb_text_color, ai_settings.lb_bg_color, screen, 'Player', leaderboard_font, 600, 200)
+        score_image_rect = draw_leaderboard(ai_settings.lb_text_color, ai_settings.lb_bg_color, screen, 'Score', leaderboard_font, 700, 200)
+
+        rank = 0
+        for player_score in stats.scores_data:
+            """逐个显示玩家得分"""
+            rank += 1
+            if rank > 10:
+                break
+            rank_text = str(rank)
+            player_text = str(player_score["player"])
+            score_text = str(player_score["score"])
+            y_postion = rank_image_rect.centery + 30 * rank
+            font = leaderboard_font
+            text_color = ai_settings.lb_text_color
+            bg_color = ai_settings.lb_bg_color
+            if player_score == new_score:
+                """当前用户的信息，样式不同"""
+                general_font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 34)
+                text_color = (255, 255, 0)
+
+            draw_leaderboard(text_color, bg_color, screen, rank_text, font, rank_image_rect.centerx, y_postion)
+            draw_leaderboard(text_color, bg_color, screen, player_text, font, player_image_rect.centerx, y_postion)
+            draw_leaderboard(text_color, bg_color, screen, score_text, font, score_image_rect.centerx, y_postion)
+
+        pygame.display.flip()
+        sleep(3)
+
     sleep(0.5)
+
+
+def draw_leaderboard(text_color ,bg_color, screen, text, font, x, y):
+    """绘制排行榜的某一项"""
+    image = font.render(text, True, text_color, bg_color)
+    image_rect = image.get_rect()
+    image_rect.centerx = x
+    image_rect.centery = y
+    screen.blit(image, image_rect)
+    return image_rect
+
 
 def clear_and_create_fleet(ai_settings, screen, ship, bullets, aliens, alien_bullets, super_bullets):
     """清空外星人和子弹列表并创建一批新外星人"""
@@ -288,7 +367,6 @@ def update_aliens_fire_bullet(ai_settings, screen, ship, bullets, aliens, stats,
     alien_bullets.update()
 
 
-
 def check_alien_bullet_ship_collision(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alien_bullets, super_bullets):
     """响应外星人子弹击中飞船"""
     for alien_bullet in alien_bullets.sprites():
@@ -301,10 +379,13 @@ def check_alien_bullet_ship_collision(ai_settings, screen, ship, bullets, aliens
 屏幕更新
 """
 
-def update_screen(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets):
+def update_screen(ai_settings, screen, ship, bullets, aliens, stats, play_button, scoreboard, alien_bullets, super_bullets, playername_inputbox):
     """更新屏幕上的图像，并切换到新屏幕"""
     # 重绘屏幕
     screen.fill(ai_settings.bg_color)
+    if playername_inputbox.login == False:
+        playername_inputbox.draw_inputbox()
+
     # 绘制全部子弹
     for bullet in bullets.sprites():
         bullet.draw_bullet()

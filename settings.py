@@ -9,9 +9,11 @@ class Settings():
         self.screen_width = 1200
         self.screen_height = 800
         self.bg_color = (0, 0, 0)
+        self.lb_bg_color = (10, 10, 10)
+        self.lb_text_color = (230, 230, 230)
 
         # 飞船设置
-        self.ship_limit = 3
+        self.ship_limit = 0
 
         # 子弹设置
         self.bullet_width = 3
@@ -42,6 +44,7 @@ class Settings():
         self.start_new_level_sound = pygame.mixer.Sound("sounds/start_new_level.wav")
         self.super_mode_sound = pygame.mixer.Sound("sounds/super_mode.wav")
         self.gameover_sound = pygame.mixer.Sound("sounds/gameover.wav")
+        self.recordbroken_sound = pygame.mixer.Sound("sounds/recordbroken.wav")
 
         # 初始化游戏动态设置
         self.initialize_dynamic_settings()
