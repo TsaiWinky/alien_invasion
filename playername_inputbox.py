@@ -11,7 +11,7 @@ class PlayernameInputbox:
         self.height = 50
         self.box_color = (255, 255, 255)
         self.text_color = (20, 20, 20)
-        self.font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 38)
+        self.font = pygame.font.SysFont("Calibri, Arial", 38)
 
         # 创建按钮的rect对象，并使其在屏幕上居中
         self.rect = pygame.Rect(0, 0, self.width, self.height)

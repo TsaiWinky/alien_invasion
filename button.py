@@ -13,7 +13,7 @@ class Button():
         self.height = 50
         self.button_color = (0, 255, 0)
         self.text_color = (255, 255, 255)
-        self.font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 48)
+        self.font = pygame.font.SysFont('Calibri, Arial', 48)
 
         # 创建按钮的rect对象，并使其在屏幕上居中
         self.rect = pygame.Rect(0, 0, self.width, self.height)

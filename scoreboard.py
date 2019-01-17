@@ -14,7 +14,7 @@ class Scoreboard():
 
         # 字体设置
         self.text_color = (230, 230, 230)
-        self.font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 28)
+        self.font = pygame.font.SysFont("Calibri, Arial", 28)
 
         # 准备得分图像、等级及剩余飞船图像
         self.prep_images()

@@ -256,7 +256,7 @@ def ship_hit(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alie
         screen.fill(ai_settings.lb_bg_color, leaderboard_rect)
 
         # 表头
-        leaderboard_font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 28)
+        leaderboard_font = pygame.font.SysFont("Calibri, Arial", 28)
         rank_image_rect = draw_leaderboard(ai_settings.lb_text_color, ai_settings.lb_bg_color, screen, 'Rank', leaderboard_font, 500, 200)
         player_image_rect = draw_leaderboard(ai_settings.lb_text_color, ai_settings.lb_bg_color, screen, 'Player', leaderboard_font, 600, 200)
         score_image_rect = draw_leaderboard(ai_settings.lb_text_color, ai_settings.lb_bg_color, screen, 'Score', leaderboard_font, 700, 200)
@@ -276,7 +276,7 @@ def ship_hit(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alie
             bg_color = ai_settings.lb_bg_color
             if player_score == new_score:
                 """当前用户的信息，样式不同"""
-                general_font = pygame.font.Font('C:\Windows\Fonts\Calibri.ttf', 34)
+                general_font = pygame.font.SysFont("Calibri, Arial", 32, True)
                 text_color = (255, 255, 0)
 
             draw_leaderboard(text_color, bg_color, screen, rank_text, font, rank_image_rect.centerx, y_postion)
@@ -284,7 +284,7 @@ def ship_hit(ai_settings, screen, ship, bullets, aliens, stats, scoreboard, alie
             draw_leaderboard(text_color, bg_color, screen, score_text, font, score_image_rect.centerx, y_postion)
 
         pygame.display.flip()
-        sleep(3)
+        sleep(5)
 
     sleep(0.5)
 

@@ -13,7 +13,7 @@ class Settings():
         self.lb_text_color = (230, 230, 230)
 
         # 飞船设置
-        self.ship_limit = 0
+        self.ship_limit = 3
 
         # 子弹设置
         self.bullet_width = 3
@@ -35,7 +35,7 @@ class Settings():
         self.speedup_scale = 1.1
 
         # 击中外星人得分点数的提高速度
-        self.score_scale = 1.5
+        self.score_scale = 1.2
 
         # 音效设置
         self.bullet_sound = pygame.mixer.Sound("sounds/bullet.wav")
