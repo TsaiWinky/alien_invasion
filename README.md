@@ -1,10 +1,11 @@
 ![游戏界面](https://s2.ax1x.com/2019/03/31/ArAsEQ.png)
 
 ## 配置：
+![配置教程](https://s2.ax1x.com/2019/03/31/ArZMj0.png)
 
 pygame版本 1.9.4
 python版本 3.6.0
-主文件为alien_invasion.py
+主文件为 alien_invasion.py
 
 
 ## 游戏指南：
