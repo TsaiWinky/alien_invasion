@@ -1,4 +1,4 @@
-![游戏界面](https://img-blog.csdnimg.cn/20190304091124999.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NhaXdlaWppYTAx,size_16,color_FFFFFF,t_70)
+![游戏界面](https://s2.ax1x.com/2019/03/31/ArAsEQ.png)
 
 ## 配置：
 
@@ -6,8 +6,6 @@ pygame版本 1.9.4
 python版本 3.6.0
 主文件为alien_invasion.py
 
-基于 Eric Matthes 的《python编程：从入门到实践》编写。
-扩展了一些功能。
 
 ## 游戏指南：
 
